@@ -49,7 +49,7 @@ int get_last_digit(string line){
     int num = 0;
     for (int i=0; i<size(digits); i++){
         string digit = digits[i];
-        int ind = line.find(digit);
+        int ind = line.rfind(digit);
         if (ind != string::npos){
             if (ind > max_ind){
                 max_ind = ind;
@@ -57,9 +57,11 @@ int get_last_digit(string line){
             }
         }
     }
+    
     int to_return = -1;
     for (int i=line.length()-1; i>=0; i--){
         if (isdigit(line[i])){
+            
             if (i < max_ind) { 
                 to_return = num;
             }
@@ -83,10 +85,9 @@ int main() {
     while (getline(cin, line))
     {
         num = 10*get_first_digit(line) + get_last_digit(line);
-        // cout << line << " " <<num << "\n";
+        
         sum += num;
     }
-    
-    cout << sum;
+    cout << sum;    
 }
 
