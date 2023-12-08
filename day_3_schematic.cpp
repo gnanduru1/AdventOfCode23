@@ -1,8 +1,8 @@
 #include <iostream>
 #include <string>
-#include <stdexcept>
-#include <assert.h> 
 #include <sstream>
+#include <set>
+#include <tuple>
 
 using namespace std;
 
@@ -31,6 +31,7 @@ int main() {
     } 
 
     string lines[height];
+    int gears[height][width] = {};
     stringstream ss(input);
     string token;
     for (int i=0; i<height; i++) {
@@ -48,37 +49,60 @@ int main() {
 
             bool valid = false;
             string num_str = "";
+            set<tuple<int, int>> seen;
             while (isdigit(lines[i][j])){
                 num_str += lines[i][j];
-                j++;
-                if (valid) continue;
 
                 for (int a=-1; a<=1; a++){
                     for (int b=-1; b<=1; b++){
                         if (a==0 && b==0) continue;
-                        if (!in_bounds(a+i, b+j, width, height)) {
-                            cout << "Invalid bounds: " << a << " " << b << "\n";
-                            continue;                    
-                        }
+                        if (!in_bounds(a+i, b+j, width, height)) continue;                   
 
                         if (is_symbol(lines[a+i][b+j])) 
                             valid = true;
                         
-                        if (false && lines[i][j] == '7'){
-                            cout << a << " " << b << "\n";
-                            cout << lines[a+i][b+j] << "valid?: " << is_symbol(lines[a+i][b+j]) << " " << valid << "\n";
-                            
+                        // Part 2
+                        if (lines[a+i][b+j] == '*'){
+                            seen.insert(make_tuple(a+i, b+j));
                         }
                     }
+                }
+
+                j++;
+            }
+
+            int num = stoi(num_str);            
+            for (auto tup : seen) {
+                int x = get<0>(tup);
+                int y = get<1>(tup);
+
+                if (gears[x][y] < 0){
+                    gears[x][y] *= -num;
+                }
+                else{
+                    gears[x][y] = -num;
                 }
             }
 
             if (valid) 
-                sum += stoi(num_str);     
-            else {
-                cout << "Invalid num: " <<  num_str << "\n";    
-            }   
+                sum += num;
         }
     }
-    cout << sum;
+    
+    // Part 1
+    cout << sum << '\n';
+
+    // Part 2
+    long gear_ratio = 0;
+    for (int i=0; i<height; i++){
+        for (int j=0; j<width; j++){
+            if (gears[i][j] > 0){
+                //cout << "i, j, gear: " << i << " " << j << " " << gears[i][j] << "\n";
+                gear_ratio += gears[i][j];
+            }
+        }
+    }
+
+    cout << gear_ratio << '\n';
+
 }
